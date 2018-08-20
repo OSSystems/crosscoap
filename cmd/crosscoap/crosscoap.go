@@ -6,7 +6,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/ibm-security-innovation/crosscoap"
+	"github.com/OSSystems/crosscoap"
 )
 
 var (
