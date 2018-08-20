@@ -2,6 +2,7 @@ package crosscoap
 
 import (
 	"bytes"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -164,7 +165,7 @@ func translateHTTPResponseToCOAPResponse(httpResp *http.Response, httpBody []byt
 	payload := make([]byte, coapRequest.Block2.Size)
 
 	n, err := rd.Read(payload)
-	if err != nil {
+	if err != nil && err != io.EOF {
 		return nil, err
 	}
 
