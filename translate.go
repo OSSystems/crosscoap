@@ -106,7 +106,7 @@ func queryString(coapMsg *coap.Message) string {
 	return "?" + strings.Join(parts, "&")
 }
 
-func translateCOAPRequestToHTTPRequest(coapMsg *coap.Message, backendURLPrefix string) *http.Request {
+func TranslateCOAPRequestToHTTPRequest(coapMsg *coap.Message, backendURLPrefix string) *http.Request {
 	method := coapMsg.Code.String()
 	url := addFinalSlash(backendURLPrefix) + coapMsg.PathString() + queryString(coapMsg)
 	body := bytes.NewReader(coapMsg.Payload)
@@ -132,7 +132,7 @@ func translateCOAPRequestToHTTPRequest(coapMsg *coap.Message, backendURLPrefix s
 	return req
 }
 
-func translateHTTPResponseToCOAPResponse(httpResp *http.Response, httpBody []byte, httpError error, coapRequest *coap.Message) (*translatedCOAPMessage, error) {
+func TranslateHTTPResponseToCOAPResponse(httpResp *http.Response, httpBody []byte, httpError error, coapRequest *coap.Message) (*translatedCOAPMessage, error) {
 	coapResp := translatedCOAPMessage{
 		Message: coap.Message{
 			Type:      coap.Acknowledgement,
@@ -175,7 +175,7 @@ func translateHTTPResponseToCOAPResponse(httpResp *http.Response, httpBody []byt
 	return &coapResp, nil
 }
 
-func generateBadRequestCOAPResponse(coapRequest *coap.Message) *translatedCOAPMessage {
+func GenerateBadRequestCOAPResponse(coapRequest *coap.Message) *translatedCOAPMessage {
 	return &translatedCOAPMessage{
 		Message: coap.Message{
 			Type:      coap.Acknowledgement,

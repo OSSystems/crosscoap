@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dustin/go-coap"
+	"github.com/OSSystems/go-coap"
 )
 
 func getHTTPRespAndBody(t *testing.T, responseText string) (*http.Response, []byte) {
@@ -34,7 +34,7 @@ func TestTranslateCOAPRequestWithoutContentFormat(t *testing.T) {
 	coapMsg.SetOption(coap.URIQuery, []string{"a=b", "c=d e&=f"})
 	coapMsg.Payload = []byte("The request body")
 
-	httpReq := translateCOAPRequestToHTTPRequest(&coapMsg, "http://localhost:9876/backend1")
+	httpReq := TranslateCOAPRequestToHTTPRequest(&coapMsg, "http://localhost:9876/backend1")
 	if httpReq.Method != "POST" {
 		t.Errorf("httpReq.Method is '%v'", httpReq.Method)
 	}
@@ -63,7 +63,7 @@ func TestTranslateCOAPRequestWithContentFormat(t *testing.T) {
 	coapMsg.SetPathString("resource")
 	coapMsg.SetOption(coap.ContentFormat, coap.TextPlain)
 
-	httpReq := translateCOAPRequestToHTTPRequest(&coapMsg, "http://localhost:9876/backend2/")
+	httpReq := TranslateCOAPRequestToHTTPRequest(&coapMsg, "http://localhost:9876/backend2/")
 	if httpReq.Method != "GET" {
 		t.Errorf("httpReq.Method is '%v'", httpReq.Method)
 	}
@@ -82,7 +82,7 @@ func TestTranslateCOAPRequestWithBadURI(t *testing.T) {
 		MessageID: 1234,
 	}
 	coapMsg.SetPathString("%")
-	httpReq := translateCOAPRequestToHTTPRequest(&coapMsg, "http://localhost:9876/backend2/")
+	httpReq := TranslateCOAPRequestToHTTPRequest(&coapMsg, "http://localhost:9876/backend2/")
 	if httpReq != nil {
 		t.Errorf("httpReq is not nil")
 	}
@@ -97,7 +97,7 @@ func TestTranslateCOAPResponse(t *testing.T) {
 		"\r\n" +
 		`{"ok":"The response body"}`
 	httpResp, httpBody := getHTTPRespAndBody(t, responseText)
-	coapResp, err := translateHTTPResponseToCOAPResponse(httpResp, httpBody, nil, &coapReq)
+	coapResp, err := TranslateHTTPResponseToCOAPResponse(httpResp, httpBody, nil, &coapReq)
 	if err != nil {
 		t.Fatalf("Error translating: %v", err)
 	}
@@ -124,7 +124,7 @@ func TestTranslateCOAPNoContentResponse(t *testing.T) {
 
 	responseText := "HTTP/1.0 204 No Content\r\n\r\n"
 	httpResp, httpBody := getHTTPRespAndBody(t, responseText)
-	coapResp, err := translateHTTPResponseToCOAPResponse(httpResp, httpBody, nil, &coapReq)
+	coapResp, err := TranslateHTTPResponseToCOAPResponse(httpResp, httpBody, nil, &coapReq)
 	if err != nil {
 		t.Fatalf("Error translating: %v", err)
 	}
@@ -145,7 +145,7 @@ func TestTranslateCOAPNoContentResponse(t *testing.T) {
 func TestTranslateCOAPResponseWithErrorDuringRequest(t *testing.T) {
 	coapReq := coap.Message{MessageID: 1234}
 	coapReq.SetPathString("/path/to/resource")
-	coapResp, err := translateHTTPResponseToCOAPResponse(nil, nil, fmt.Errorf("dummy error"), &coapReq)
+	coapResp, err := TranslateHTTPResponseToCOAPResponse(nil, nil, fmt.Errorf("dummy error"), &coapReq)
 	if err != nil {
 		t.Fatalf("Error translating: %v", err)
 	}

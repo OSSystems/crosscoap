@@ -101,10 +101,10 @@ func (p *proxyHandler) doHTTPRequest(req *http.Request) (*http.Response, []byte,
 func (p *proxyHandler) ServeCOAP(l *net.UDPConn, a *net.UDPAddr, m *coap.Message) *coap.Message {
 	p.logAccess("%v: CoAP %v URI-Path=%v URI-Query=%v", a, m.Code, m.PathString(), m.Options(coap.URIQuery))
 	waitForResponse := m.IsConfirmable()
-	req := translateCOAPRequestToHTTPRequest(m, p.BackendURL)
+	req := TranslateCOAPRequestToHTTPRequest(m, p.BackendURL)
 	if req == nil {
 		if waitForResponse {
-			return &generateBadRequestCOAPResponse(m).Message
+			return &GenerateBadRequestCOAPResponse(m).Message
 		} else {
 			return nil
 		}
@@ -117,7 +117,7 @@ func (p *proxyHandler) ServeCOAP(l *net.UDPConn, a *net.UDPAddr, m *coap.Message
 			p.logError("Error on HTTP request: %v", err)
 		}
 		if waitForResponse {
-			coapResp, err := translateHTTPResponseToCOAPResponse(httpResp, httpBody, err, m)
+			coapResp, err := TranslateHTTPResponseToCOAPResponse(httpResp, httpBody, err, m)
 			if err != nil {
 				p.logError("Error translating HTTP to CoAP: %v", err)
 			}
