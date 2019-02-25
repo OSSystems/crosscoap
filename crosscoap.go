@@ -37,6 +37,7 @@
 package crosscoap
 
 import (
+	"crypto/tls"
 	"io/ioutil"
 	"log"
 	"net"
@@ -85,7 +86,16 @@ func (p *proxyHandler) doHTTPRequest(req *http.Request) (*http.Response, []byte,
 	if p.Timeout != nil {
 		timeout = *p.Timeout
 	}
-	httpClient := &http.Client{Timeout: timeout}
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
+	httpClient := &http.Client{
+		Timeout:   timeout,
+		Transport: tr,
+	}
+
 	httpResp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, nil, err
